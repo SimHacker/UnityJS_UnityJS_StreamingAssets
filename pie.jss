@@ -1406,7 +1406,7 @@ function CreatePieTracker()
                     altKey: 'altKey'
                 },
                 handler: (obj, results) => {
-                    //console.log("pie.js: PieTracker: MouseButtonDown: results:", JSON.stringify(results), "pieTracker.tracking:", pieTracker.tracking);
+                    //console.log("pie.js: PieTracker: MouseButtonDown: results:", JSON.stringify(results), "pieTracker.tracking:", pieTracker.tracking, "mouseRaycastHitBridgeObjectID", results.mouseRaycastHitBridgeObjectID);
 
                     pieTracker.screenSize = results.screenSize;
                     pieTracker.mouseRaycastHitPoint = results.mouseRaycastHitPoint;
