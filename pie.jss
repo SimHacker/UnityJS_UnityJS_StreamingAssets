@@ -876,7 +876,7 @@ function CreatePieTracker()
     function UpdatePie(pie)
     {
         var view = PieTrackerView(pie);
-        console.log("UpdatePie", "slices", pie.slices.length, JSON.stringify(view));
+        //console.log("UpdatePie", "slices", pie.slices.length, JSON.stringify(view));
         bridge.updateObject(pieTracker, {
             pie: view,
             pieChanged: true
@@ -1416,7 +1416,7 @@ function CreatePieTracker()
                     altKey: 'altKey'
                 },
                 handler: (obj, results) => {
-                    console.log("pie.js: PieTracker: MouseButtonDown: results:", JSON.stringify(results), "pieTracker.tracking:", pieTracker.tracking, "mouseRaycastHitBridgeObjectID", results.mouseRaycastHitBridgeObjectID);
+                    //console.log("pie.js: PieTracker: MouseButtonDown: results:", JSON.stringify(results), "pieTracker.tracking:", pieTracker.tracking, "mouseRaycastHitBridgeObjectID", results.mouseRaycastHitBridgeObjectID);
 
                     pieTracker.screenSize = results.screenSize;
                     pieTracker.mouseRaycastHitPoint = results.mouseRaycastHitPoint;
