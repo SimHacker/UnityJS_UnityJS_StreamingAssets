@@ -815,9 +815,7 @@ function CreatePieTracker()
             pie.usedLabels = [];
         }
 
-        bridge.updateObject(pieTracker, {
-            pie: PieTrackerView(pie)
-        });
+        UpdatePie(pie);
 
         if (!pie.groupObject) {
 
@@ -875,6 +873,17 @@ function CreatePieTracker()
     }
 
 
+    function UpdatePie(pie)
+    {
+        var view = PieTrackerView(pie);
+        console.log("UpdatePie", "slices", pie.slices.length, JSON.stringify(view));
+        bridge.updateObject(pieTracker, {
+            pie: view,
+            pieChanged: true
+        });
+    }
+
+    
     function LayoutPie(pie)
     {
         //console.log("LayoutPie", pie);
@@ -1349,7 +1358,7 @@ function CreatePieTracker()
             initialDirection: 0.5 * Math.PI,
             subtend: 0,
             clockwise: true,
-            inactiveDistance: 80,
+            inactiveDistance: 50,
             itemDistance: 100,
             itemLabelDistance: 100,
             drawBackground: 'DrawBackground_Pie',
@@ -1371,7 +1380,7 @@ function CreatePieTracker()
             itemIndex: -1,
             slice: null,
             item: null,
-            pieLabelFontSize: 24,
+            pieLabelFontSize: 18,
             pieLabelFontColor: '#ffffff',
             pieLabelPrefix: '<b>',
             pieLabelAlignment: 'Center',
@@ -1384,6 +1393,7 @@ function CreatePieTracker()
             itemLabelPosition: null,
             pies: {},
             DeconstructPie: DeconstructPie,
+            UpdatePie: UpdatePie,
             LayoutPie: LayoutPie,
             DrawPieBackground: DrawPieBackground,
             CancelPie: CancelPie
@@ -1406,7 +1416,7 @@ function CreatePieTracker()
                     altKey: 'altKey'
                 },
                 handler: (obj, results) => {
-                    //console.log("pie.js: PieTracker: MouseButtonDown: results:", JSON.stringify(results), "pieTracker.tracking:", pieTracker.tracking, "mouseRaycastHitBridgeObjectID", results.mouseRaycastHitBridgeObjectID);
+                    console.log("pie.js: PieTracker: MouseButtonDown: results:", JSON.stringify(results), "pieTracker.tracking:", pieTracker.tracking, "mouseRaycastHitBridgeObjectID", results.mouseRaycastHitBridgeObjectID);
 
                     pieTracker.screenSize = results.screenSize;
                     pieTracker.mouseRaycastHitPoint = results.mouseRaycastHitPoint;
