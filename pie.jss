@@ -815,9 +815,7 @@ function CreatePieTracker()
             pie.usedLabels = [];
         }
 
-        bridge.updateObject(pieTracker, {
-            pie: PieTrackerView(pie)
-        });
+        UpdatePie(pie);
 
         if (!pie.groupObject) {
 
@@ -875,6 +873,14 @@ function CreatePieTracker()
     }
 
 
+    function UpdatePie(pie)
+    {
+        bridge.updateObject(pieTracker, {
+            pie: PieTrackerView(pie)
+        });
+    }
+
+    
     function LayoutPie(pie)
     {
         //console.log("LayoutPie", pie);
@@ -1384,6 +1390,7 @@ function CreatePieTracker()
             itemLabelPosition: null,
             pies: {},
             DeconstructPie: DeconstructPie,
+            UpdatePie: UpdatePie,
             LayoutPie: LayoutPie,
             DrawPieBackground: DrawPieBackground,
             CancelPie: CancelPie
