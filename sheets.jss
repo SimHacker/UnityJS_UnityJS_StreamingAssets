@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////
 // sheets.js
-// By Don Hopkins, Ground Up Software.
+// Copyright (C) 2019 by Don Hopkins, Ground Up Software.
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -46,10 +46,10 @@ if (gGoogleSheets) {
 
         ss.addMenu("JSONster", [
             {name: 'Format Spreadsheet as JSON', functionName: 'FormatSpreadsheetAsJSON'},
-            {name: 'Make Meta Data Sheets', functionName: 'MakeMetaDataSheets'},
-            //{name: 'Update Meta Data', functionName: 'UpdateMetaData'},
+            {name: 'Make MetaData Sheets', functionName: 'MakeMetaDataSheets'}
+            //{name: 'Update MetaData', functionName: 'UpdateMetaData'},
             //{name: 'Make Named Ranges', functionName: 'MakeNamedRanges'},
-            {name: 'Update Ranges', functionName: 'UpdateRanges'}
+            //{name: 'Update Ranges', functionName: 'UpdateRanges'}
         ]);
     }
 
