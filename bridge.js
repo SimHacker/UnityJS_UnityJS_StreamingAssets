@@ -684,29 +684,42 @@ class UnityJSBridge {
         var context =
             canvasNode.getContext('2d');
 
+        //console.log("drawToCanvas", width, height, canvas, drawer);
+
         drawer(
             canvas,
             context,
             params,
             () => {
+                //console.log("drawToCanvas driver", this.driver, "params", params);
                 var texture = null;
                 switch (this.driver) {
 
                     case "WebGL":
-                        var id = params.cache.backgroundSharedTextureID;
-                        if (!id) {
-                            params.cache.backgroundSharedTextureID = id =
-                                this._UnityJS_AllocateTexture(params.width, params.height);
-                            //console.log("Bridge: drawToCanvas: WebGL: AllocateTexture: width: " + params.width + " height: " + params.height + " id: " + id);
+                        var id = params.cache.sharedTextureID;
+                        //console.log("drawToCanvas WebGL sharedTextureID", params.cache.sharedTextureID, "sharedTextureWidth", params.cache.sharedTextureWidth, "sharedTextureHeight", params.cache.sharedTextureHeight, "width", width, "height", height);
+                        if (!id ||
+                            (width !== params.cache.sharedTextureWidth) ||
+                            (height !== params.cache.sharedTextureHeight)) {
+                            if (id) {
+                                //console.log("Bridge: drawToCanvas: WebGL: resizing FreeTexture: id: " + id + " from: " + params.cache.sharedTextureWidth + " " + params.cache.sharedTextureHeight + " to: " + params.width + " " + params.height);
+                                this._UnityJS_FreeTexture(id);
+                            }
+                            params.cache.sharedTextureID = id =
+                                this._UnityJS_AllocateTexture(width, height);
+                            //console.log("Bridge: drawToCanvas: WebGL: AllocateTexture: id: " + id + " width: " + params.width + " height: " + params.height);
+                            params.cache.sharedTextureWidth = width;
+                            params.cache.sharedTextureHeight = height;
                         }
                         var imageData =
-                            context.getImageData(0, 0, params.width, params.height);
+                            context.getImageData(0, 0, width, height);
                         this._UnityJS_UpdateTexture(id, imageData);
                         texture = {
                             type: 'sharedtexture',
                             id: id
                         };
                         var uvRect = { x: 0, y: 0, width: 1, height: -1 };
+                        //console.log("drawToCanvas WebGL success");
                         success(texture, uvRect, params);
                         canvasNode.parentNode.removeChild(canvasNode);
                         break;
@@ -738,10 +751,12 @@ class UnityJSBridge {
                         break;
 
                     default:
+                        //console.log("drawToCanvas default width", width, "height", height);
                         canvasNode.toBlob((blob) => {
                             var reader = new FileReader();
                             reader.onload = (e) => {
                                 var data = e.target.result;
+                                //console.log("drawToCanvas default onload", e, data);
                                 var texture = {
                                     type: 'datauri',
                                     uri: data,
@@ -753,9 +768,11 @@ class UnityJSBridge {
                                 canvasNode.parentNode.removeChild(canvasNode);
                             };
                             reader.onerror = reader.onabort = (e) => {
+                                //console.log("drawToCanvas default error", e, params);
                                 error(params);
                                 canvasNode.parentNode.removeChild(canvasNode);
                             };
+                            //console.log("drawToCanvas default blob", blob);
                             reader.readAsDataURL(blob);
                         });
                         break;
@@ -766,6 +783,8 @@ class UnityJSBridge {
                 error(params);
                 canvasNode.parentNode.removeChild(canvasNode);
             });
+
+        //console.log("drawToCanvas drawer done");
 
     }
 

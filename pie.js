@@ -821,7 +821,7 @@ function CreatePieTracker()
 
             pie.groupObject = bridge.createObject({
                 prefab: 'Prefabs/PieGroup',
-                parent: 'object:' + world.overlay.id + '/overlay',
+                parent: 'object:' + world.textOverlays.id + '/overlay',
                 update: {
                     'gameObject/method:SetActive': [false]
                 }

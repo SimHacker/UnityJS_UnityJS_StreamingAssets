@@ -1032,7 +1032,7 @@ if (gGoogleSheets) {
                 var xhr = new XMLHttpRequest();
                 xhrs[sheetKey] = xhr;
 
-                //console.log("sheets.js: LoadSheets: spreadsheetName: " + sheetSpec.spreadsheetName + " sheetName: " + sheetSpec.sheetName + " url: " + url);
+                console.log("sheets.js: LoadSheets: spreadsheetName: " + sheetSpec.spreadsheetName + " sheetName: " + sheetSpec.sheetName + " url: " + url);
 
                 xhr.onload = function () {
                     var text = xhr.responseText;
