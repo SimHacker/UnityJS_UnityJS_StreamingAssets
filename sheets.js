@@ -654,12 +654,12 @@ if (gGoogleSheets) {
 
                         rowToColumnRows[rangeRow] = 1;
 
-                        console.log("DOING", "header", header, "ROW", "part.type", part.type, "rangeRow", rangeRow, "rangeColumn", rangeColumn, "c2rc", columnToRowColumns[rangeColumn], "columns", columns);
+                        //console.log("DOING", "header", header, "ROW", "part.type", part.type, "rangeRow", rangeRow, "rangeColumn", rangeColumn, "c2rc", columnToRowColumns[rangeColumn], "columns", columns);
                         if ((part.type == 'row') &&
                             !columnToRowColumns[rangeColumn]) {
                             for (var rowColumns = 0, maxColumns = columns - rangeColumn; rowColumns < maxColumns; rowColumns++) {
                                 var value = values[rangeRow][rangeColumn + rowColumns];
-                                console.log("SCAN", "rowColumns", rowColumns, "maxColumns", maxColumns, "rangeRow", rangeRow, "index", rangeColumn + rowColumns, "volue", value);
+                                //console.log("SCAN", "rowColumns", rowColumns, "maxColumns", maxColumns, "rangeRow", rangeRow, "index", rangeColumn + rowColumns, "volue", value);
                                 if (!value) {
                                     break;
                                 }
@@ -1032,7 +1032,7 @@ if (gGoogleSheets) {
                 var xhr = new XMLHttpRequest();
                 xhrs[sheetKey] = xhr;
 
-                console.log("sheets.js: LoadSheets: spreadsheetName: " + sheetSpec.spreadsheetName + " sheetName: " + sheetSpec.sheetName + " url: " + url);
+                //console.log("sheets.js: LoadSheets: spreadsheetName: " + sheetSpec.spreadsheetName + " sheetName: " + sheetSpec.sheetName + " url: " + url);
 
                 xhr.onload = function () {
                     var text = xhr.responseText;
