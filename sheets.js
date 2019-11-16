@@ -577,8 +577,8 @@ if (gGoogleSheets) {
         var namedRanges = spreadsheet.getNamedRanges();
         namedRanges.forEach(function (namedRange) {
             var rangeSheetName = namedRange.getRange().getSheet().getName();
-            if ((sheetName == rangeSheetName) ||
-                (rangeSheetName.indexOf(sheetName + '$') == 0)) { // startsWith is missing!
+            if ((sheetName === rangeSheetName) ||
+                (rangeSheetName.indexOf(sheetName + '$') === 0)) { // startsWith is missing!
                 namedRange.remove();
             }
         });
@@ -629,11 +629,11 @@ if (gGoogleSheets) {
 
                     //console.log("header", header, "rangeName", rangeName, "rowOffset", part.rowOffset, "columnOffset", part.columnOffset, "type", part.type, "layer", part.layer, "suffix", part.suffix, "row", row, "column", column, "rangeRow", rangeRow, "rangeColumn", rangeColumn, "rowToColumnRows[rangeRow]", rowToColumnRows[rangeRow], "columnToRowColumns[rangeColumn]", columnToRowColumns[rangeColumn]);
 
-                    if ((part.type == 'cell') || (part.type == 'column')) {
+                    if ((part.type === 'cell') || (part.type === 'column')) {
 
                         columnToRowColumns[rangeColumn] = 1;
 
-                        if ((part.type == 'column') &&
+                        if ((part.type === 'column') &&
                             !rowToColumnRows[rangeRow]) {
                             for (var columnRows = 0, maxRows = rows - rangeRow; columnRows < maxRows; columnRows++) {
                                 var value = values[rangeRow + columnRows][rangeColumn];
@@ -650,12 +650,12 @@ if (gGoogleSheets) {
 
                     }
 
-                    if ((part.type == 'cell') || (part.type == 'row')) {
+                    if ((part.type === 'cell') || (part.type === 'row')) {
 
                         rowToColumnRows[rangeRow] = 1;
 
                         //console.log("DOING", "header", header, "ROW", "part.type", part.type, "rangeRow", rangeRow, "rangeColumn", rangeColumn, "c2rc", columnToRowColumns[rangeColumn], "columns", columns);
-                        if ((part.type == 'row') &&
+                        if ((part.type === 'row') &&
                             !columnToRowColumns[rangeColumn]) {
                             for (var rowColumns = 0, maxColumns = columns - rangeColumn; rowColumns < maxColumns; rowColumns++) {
                                 var value = values[rangeRow][rangeColumn + rowColumns];
@@ -673,17 +673,17 @@ if (gGoogleSheets) {
                     }
 
                     var rangeRows =
-                        ((part.type == 'cell') || (part.type == 'row'))
+                        ((part.type === 'cell') || (part.type === 'row'))
                             ? 1
                             : rowToColumnRows[rangeRow] || 1;
 
                     var rangeColumns =
-                        ((part.type == 'cell') || (part.type == 'column'))
+                        ((part.type === 'cell') || (part.type === 'column'))
                             ? 1
                             : columnToRowColumns[rangeColumn] || 1;
 
                     var layerSheet =
-                        (part.layer == '')
+                        (part.layer === '')
                             ? sheet
                             : spreadsheet.getSheetByName(sheetName + '$' + part.layer);
 
@@ -694,7 +694,7 @@ if (gGoogleSheets) {
 
                     var range = layerSheet.getRange(rangeRow + 1, rangeColumn + 1, rangeRows, rangeColumns);
 /*
-                    if (sheet == layerSheet) {
+                    if (sheet === layerSheet) {
                         range.setBackgroundColor('#c0c0ff');
                         range.setBorder(true, true, true, true, false, false, '#000000', SpreadsheetApp.BorderStyle.SOLID_MEDIUM);
                         //var note = 
@@ -734,7 +734,7 @@ if (gGoogleSheets) {
             var sheet = sheets[index];
             var sheetName = sheet.getName();
             //console.log("MakeAllMetaDataSheets: sheetName:", sheetName);
-            if (sheetName.indexOf('$') != -1) {
+            if (sheetName.indexOf('$') !== -1) {
                 continue;
             }
 
@@ -758,7 +758,7 @@ if (gGoogleSheets) {
         for (var row = 0; !layers && (row < sheetRows); row++) {
             for (var column = 0; !layers && (column < sheetColumns); column++) {
                 var value = values[row][column];
-                if (value == 'Layers:') {
+                if (value === 'Layers:') {
                     value = values[row][column + 1] || '';
                     //console.log("MakeMetaDataSheets: sheetName:", sheetName, "row:", row, "column:", column, "Layers:", value);
                     value.split(',').forEach(function (token) {
@@ -767,7 +767,7 @@ if (gGoogleSheets) {
                             if (layers === null) {
                                 layers = [];
                             }
-                            if (layers.indexOf(token) == -1) {
+                            if (layers.indexOf(token) === -1) {
                                 layers.push(token);
                             }
                         }
@@ -780,7 +780,7 @@ if (gGoogleSheets) {
             //console.log("MakeMetaDataSheets: sheetName:", sheetName, "layers:", layers);
             var lastActiveSheet = spreadsheet.getActiveSheet();
             layers.forEach(function (layer) {
-                if (layer == "namedRange") {
+                if (layer === "namedRange") {
                     MakeNamedRanges(sheet);
                 } else {
                     var layerSheetName = sheetName + '$' + layer;
@@ -793,8 +793,8 @@ if (gGoogleSheets) {
                         for (var insertSheetIndex = nowSheets.length - 1; insertSheetIndex > 0; insertSheetIndex--) {
                             var nowSheetName = nowSheets[insertSheetIndex].getName();
                             //console.log("MakeMetaDataSheets: sheetName:", sheetName, "layerSheetName:", layerSheetName, "insertSheetIndex:", insertSheetIndex, "nowSheetName:", nowSheetName);
-                            if ((nowSheetName == sheetName) ||
-                                nowSheetName.indexOf(sheetName + '$') == 0) { // startsWith is missing!
+                            if ((nowSheetName === sheetName) ||
+                                nowSheetName.indexOf(sheetName + '$') === 0) { // startsWith is missing!
                                 insertSheetIndex++;
                                 break;
                             }
@@ -900,12 +900,12 @@ if (gGoogleSheets) {
                         inherentWidth: image.getInherentWidth(),
                         inherentHeight: image.getInherentHeight(),
                         script: image.getScript(),
-                        url: image.getUrl() // Google BUG: url is always empty, dammit!
+                        url: image.getUrl(), // Google BUG: url is always empty, dammit!
                     };
 
                     var dataList = [];
                     var jsonOld = results[row][column];
-                    if (jsonOld != "") {
+                    if (jsonOld !== "") {
                         dataList = JSON.parse(jsonOld);
                     }
                     dataList.push(data);
@@ -1085,7 +1085,7 @@ if (gGoogleSheets) {
                                 var rangesTable = scope.value;
 
                                 if (scope.error) {
-                                    console.log("sheets.js: LoadSheets: Error loading ranges. Error in sheet name:", scope.errorScope.errorSheetName, "row:", scope.errorScope.errorRow, "column:", scope.errorScope.errorColumn, "error:", error, "errorScope:", scope.errorScope);
+                                    console.log("sheets.js: LoadSheets: Error loading ranges. Error:", scope.errorScope.error, "in sheet name:", scope.errorScope.errorSheetName, "row:", scope.errorScope.errorRow, "column:", scope.errorScope.errorColumn, "errorScope:", scope.errorScope);
                                 } else if (!rangesTable) {
                                     console.log("sheets.js: LoadSheets: Loaded ranges but it was null.", "scope:", scope);
                                     if (!calledError) {
@@ -1140,7 +1140,7 @@ if (gGoogleSheets) {
         xhr.onload = function () {
             var text = xhr.responseText;
             var result = JSON.parse(text);
-            if (result.status != 'success') {
+            if (result.status !== 'success') {
                 console.log("sheets.js: LoadSheetsFromApp: Invalid status: " + text);
                 error();
                 return;
@@ -1245,13 +1245,13 @@ if (gGoogleSheets) {
 
 function SheetToScope(sheets, ranges, sheetName, isSingleSheet)
 {
-    if (!sheetName || sheetName.length == 0) {
+    if (!sheetName || sheetName.length === 0) {
         return null;
     }
 
     var sheet = GetSheetValues(sheets, sheetName);
 
-    if (!sheet || sheet.length == 0) {
+    if (!sheet || sheet.length === 0) {
         return null;
     }
 
@@ -1331,7 +1331,7 @@ function LoadJSONFromSheet(sheets, ranges, scope)
                 return null;
 
             case "boolean":
-                return ('' + str).trim().toLowerCase() == "true";
+                return ('' + str).trim().toLowerCase() === "true";
 
             case "string":
                 return "" + str;
@@ -1365,8 +1365,8 @@ function LoadJSONFromSheet(sheets, ranges, scope)
     function GetColumnString(column, doNotTrim)
     {
         if (isNaN(column) || 
-            ((column != "") && 
-             (!column))) {
+            (!column &&
+             (column !== 0))) {
             var oops = true;
             return "";
         }
@@ -1482,7 +1482,7 @@ function LoadJSONFromSheet(sheets, ranges, scope)
             scope.valueColumns = n;
             scope.value = [];
             for (i = 0; i < n; i++) {
-                scope.value.push(GetColumnString(scope.valueColumn + i).toLowerCase() == "true");
+                scope.value.push(GetColumnString(scope.valueColumn + i).toLowerCase() === "true");
             }
             return null; // success
 
@@ -1645,7 +1645,7 @@ function LoadJSONFromSheet(sheets, ranges, scope)
                         index: index,
                         key: key,
                         keyRow: scope.currentRow,
-                        keyColumn: scope.startColumn
+                        keyColumn: scope.startColumn,
                     };
 
                     scope.subScopes.push(subScope);
@@ -1698,11 +1698,12 @@ function LoadJSONFromSheet(sheets, ranges, scope)
                 unindented = false;
                 scope.previousColumn = scope.currentColumn - (scope.alreadyIndented ? 1 : 0);
                 for (i = 0; i <= scope.previousColumn; i++) {
-                    if (GetColumnString(i) != "") {
+                    if (GetColumnString(i) !== "") {
                         unindented = true;
                         break;
                     }
                 }
+
                 if (unindented) {
                     break;
                 }
@@ -1724,7 +1725,7 @@ function LoadJSONFromSheet(sheets, ranges, scope)
                         rowCount: scope.lastRow - scope.currentRow,
                         columnCount: scope.lastColumn - scope.startColumn,
                         inArray: true,
-                        index: index
+                        index: index,
                     };
 
                     scope.subScopes.push(subScope);
@@ -1757,7 +1758,7 @@ function LoadJSONFromSheet(sheets, ranges, scope)
             }
 
             var sheetName = GetColumnString(scope.valueColumn);
-            if (sheetName == "") {
+            if (sheetName === "") {
                 scope.error = "Expected 'sheet sheetName'.";
                 scope.errorSheetName = scope.sheetName;
                 scope.errorRow = scope.currentRow;
@@ -1891,7 +1892,7 @@ function LoadJSONFromSheet(sheets, ranges, scope)
                         gridRow: gridRow,
                         gridColumn: gridColumn,
                         gridRowIndex: gridRowIndex,
-                        gridColumnIndex: gridColumnIndex
+                        gridColumnIndex: gridColumnIndex,
                     };
 
                     scope.subScopes.push(subScope);
@@ -2063,7 +2064,7 @@ function LoadJSONFromSheet(sheets, ranges, scope)
                     break;
 
                 case 'row':
-                    if (tokens.length == 1) {
+                    if (tokens.length === 1) {
                         scope.value = range.row;
                     } else if (tokens.length == 2) {
                         var row = parseInt(tokens[1]);
@@ -2083,9 +2084,9 @@ function LoadJSONFromSheet(sheets, ranges, scope)
                     break;
 
                 case 'column':
-                    if (tokens.length == 1) {
+                    if (tokens.length === 1) {
                         scope.value = range.column;
-                    } else if (tokens.length == 2) {
+                    } else if (tokens.length === 2) {
                         var column = parseInt(tokens[1]);
                         for (var row = 0; row < range.rows; row++) {
                             var rowValues = values[range.row + row - 1];
@@ -2104,7 +2105,7 @@ function LoadJSONFromSheet(sheets, ranges, scope)
 
                 case 'cell':
                     expectedTokens = 3;
-                    if (tokens.length == 3) {
+                    if (tokens.length === 3) {
                         var row = parseInt(tokens[1]);
                         var column = parseInt(tokens[2]);
                         var rowValues = values[range.row + row - 1];
@@ -2142,7 +2143,7 @@ function LoadJSONFromSheet(sheets, ranges, scope)
 
             }
 
-            if (expectedTokens != tokens.length) {
+            if (expectedTokens !== tokens.length) {
                 scope.error = "Range name: " + rangeName + " uses invalid cell selector: " + rangeSelector;
                 scope.errorSheetName = scope.sheetName;
                 scope.errorRow = scope.currentRow;
@@ -2194,7 +2195,7 @@ function LoadJSONFromSheet(sheets, ranges, scope)
             scope.previousColumn = scope.currentColumn - (scope.alreadyIndented ? 1 : 0);
             for (headerColumn = 0; headerColumn <= scope.previousColumn; headerColumn++) {
                 header = GetColumnString(headerColumn);
-                if (header != "") {
+                if (header !== "") {
                     scope.error = "Type table should be follow by an indented row of table headers, not an unindented row.";
                     scope.errorSheetName = scope.sheetName;
                     scope.errorRow = scope.currentRow;
@@ -2206,7 +2207,7 @@ function LoadJSONFromSheet(sheets, ranges, scope)
             // Make sure there are one or more indented headers.
             header = GetColumnString(headerColumn);
 
-            if (!header) {
+            if (header === "") {
                 scope.error = "Type table should be follow by an indented row of table headers. Missing the first header.";
                 scope.errorSheetName = scope.sheetName;
                 scope.errorRow = scope.currentRow;
@@ -2220,7 +2221,7 @@ function LoadJSONFromSheet(sheets, ranges, scope)
             var lastHeaderColumn = -1;
             for (; headerColumn < scope.lastColumn; headerColumn++) {
                 header = GetColumnString(headerColumn);
-                if (header == "") {
+                if (header === "") {
                     continue;
                 }
                 headers.push([header, headerRow, headerColumn]);
@@ -2247,7 +2248,7 @@ function LoadJSONFromSheet(sheets, ranges, scope)
 
                 function finishToken()
                 {
-                    if (token == "") {
+                    if (token === "") {
                         return;
                     }
                     tokens.push([token, headerRow, headerColumn]);
@@ -2297,7 +2298,7 @@ function LoadJSONFromSheet(sheets, ranges, scope)
                 unindented = false;
                 scope.previousColumn = scope.currentColumn - (scope.alreadyIndented ? 1 : 0);
                 for (i = 0; i <= scope.previousColumn; i++) {
-                    if (GetColumnString(i) != "") {
+                    if (GetColumnString(i) !== "") {
                         unindented = true;
                         break;
                     }
@@ -2361,7 +2362,7 @@ function LoadJSONFromSheet(sheets, ranges, scope)
 
                     tokenInfo = NextTokenInfo();
                     token = tokenInfo[0];
-                    if (token != '.') {
+                    if (token !== '.') {
                         error = "ParseTop: did not expect any tokens after final '}' or ']'.";
                         errorRow = tokenRow;
                         errorColumn = tokenColumn;
@@ -2466,7 +2467,7 @@ function LoadJSONFromSheet(sheets, ranges, scope)
                                             tableRows: 1,
                                             tableColumns: headerColumns,
                                             inTableObject: true,
-                                            inTableObjectKey: key
+                                            inTableObjectKey: key,
                                         };
 
                                         scope.subScopes.push(subScope);
@@ -2565,7 +2566,7 @@ function LoadJSONFromSheet(sheets, ranges, scope)
                                     tableRows: 1,
                                     tableColumns: headerColumns,
                                     inTableArray: true,
-                                    inTableArrayIndex: subScope.value.length
+                                    inTableArrayIndex: subScope.value.length,
                                 };
 
                                 scope.subScopes.push(subScope);
