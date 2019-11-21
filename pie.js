@@ -1338,6 +1338,42 @@ function CreatePieTracker()
     }
 
 
+    function DrawPieBackground(pie, target)
+    {
+        //console.log("pie.js: DrawPieBackground: pie:", pie);
+        var world = bridge.world;
+        var pieTracker = world.pieTracker;
+
+        var drawBackgroundName = bridge.searchDefault('drawBackground', pie, pieTracker.drawBackground);
+        var drawBackground = eval(drawBackgroundName);
+
+        var params = {
+            width: 512, 
+            height: 512, 
+            pie: pie,
+            cache: pie,
+            target: target
+        };
+
+        bridge.drawToCanvas(params,
+            drawBackground,
+            (texture, uvRect, params) => {
+                //console.log("pie drawToCanvas success", texture);
+                bridge.updateObject(pie.groupObject, {
+                    'component:RectTransform/sizeDelta': {
+                        x: params.width, 
+                        y: params.height 
+                    },
+                    'component:UnityEngine.UI.RawImage/texture': texture,
+                    'component:UnityEngine.UI.RawImage/uvRect': uvRect
+                });
+            },
+            (params) => {
+                console.log("pie drawToCanvas error", params);
+            });
+    }
+
+
     world.pieTracker = pieTracker = bridge.createObject({
         prefab: 'Prefabs/PieTracker', 
         obj: {
@@ -1606,55 +1642,6 @@ function CreatePieTracker()
         }
     });
 
-}
-
-
-function DrawPieBackground(pie, target)
-{
-    //console.log("pie.js: DrawPieBackground: pie:", pie);
-    var world = bridge.world;
-    var pieTracker = world.pieTracker;
-
-    var drawBackgroundName = bridge.searchDefault('drawBackground', pie, pieTracker.drawBackground);
-    var drawBackground = eval(drawBackgroundName);
-
-    var params = {
-        width: 512, 
-        height: 512, 
-        pie: pie,
-        cache: pie,
-        target: target
-    };
-
-    bridge.drawToCanvas(params,
-        drawBackground,
-        (texture, uvRect, params) => {
-            //console.log("pie drawToCanvas success", texture);
-            bridge.updateObject(pie.groupObject, {
-                'component:RectTransform/sizeDelta': {
-                    x: params.width, 
-                    y: params.height 
-                },
-                'component:UnityEngine.UI.RawImage/texture': texture,
-                'component:UnityEngine.UI.RawImage/uvRect': uvRect
-            });
-        },
-        (params) => {
-            console.log("pie drawToCanvas error", params);
-        });
-}
-
-
-function CreatePies()
-{
-    var world = bridge.world;
-    var pieTracker = world.pieTracker;
-
-    if (!pieTracker) {
-        return;
-    }
-
-    Object.assign(pieTracker.pies, world.pie.pies);
 }
 
 

@@ -158,7 +158,8 @@ class UnityJSBridge {
             template = {};
         }
 
-        //console.log("Bridge: createObject: template:", JSON.stringify(template, null, 4));
+        //console.log("Bridge: createObject: prefab:", template.prefab);
+        //console.log("Bridge: createObject: update:", (template.update && Object.keys(template.update)), '\n' + JSON.stringify(template.update, null, 4));
 
         // obj, prefab, component, preEvents, parent, worldPositionStays, update, interests, postEvents
 
