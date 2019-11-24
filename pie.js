@@ -1345,7 +1345,7 @@ function CreatePieTracker()
         var pieTracker = world.pieTracker;
 
         var drawBackgroundName = bridge.searchDefault('drawBackground', pie, pieTracker.drawBackground);
-        var drawBackground = eval(drawBackgroundName);
+        var drawBackground = typeof(drawBackgroundName) == 'function' ? drawBackgroundName : eval(drawBackgroundName);
 
         var params = {
             width: 512, 
