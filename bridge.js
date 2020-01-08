@@ -3,7 +3,6 @@
 // Unity3D / JavaScript Bridge
 // Don Hopkins, Ground Up Software.
 
-
 "use strict";
 
 
@@ -151,6 +150,27 @@ class UnityJSBridge {
     }
 
 
+    objToId(obj)
+    {
+        if (typeof(obj) == 'string') {
+            return obj;
+        }
+
+        if (Array.isArray(obj)) {
+            return obj.map(subObj => this.objToId(subObj));
+        }
+
+        const id = obj.id;
+        if (id) {
+            return id;
+        }
+
+        console.log('Bridge.objToId: unexpected type: obj:', obj);
+
+        return null;
+    }
+
+
     createObject(template)
     {
 
@@ -158,7 +178,7 @@ class UnityJSBridge {
             template = {};
         }
 
-        //console.log("Bridge: createObject: prefab:", template.prefab);
+        //console.log("Bridge: createObject: prefab:", template.prefab, Object.keys(template));
         //console.log("Bridge: createObject: update:", (template.update && Object.keys(template.update)), '\n' + JSON.stringify(template.update, null, 4));
 
         // obj, prefab, component, preEvents, parent, worldPositionStays, update, interests, postEvents
@@ -206,7 +226,7 @@ class UnityJSBridge {
         this.objects[id] = obj;
 
         var data = {
-            id: id
+            id: id,
         };
 
         if (prefab && prefab.length) {
@@ -243,7 +263,7 @@ class UnityJSBridge {
 
         this.sendEvent({
             event: 'Create',
-            data: data
+            data: data,
         });
 
         return obj;
@@ -259,7 +279,7 @@ class UnityJSBridge {
 
         this.sendEvent({
             event: 'Destroy',
-            id: obj.id
+            id: this.objToId(obj),
         });
     }
 
@@ -273,14 +293,16 @@ class UnityJSBridge {
 
         this.sendEvent({
             event: 'Update',
-            id: obj.id,
-            data: data
+            id: this.objToId(obj),
+            data: data,
         });
     }
 
 
     queryObject(obj, query, callback)
     {
+        //console.log("Bridge.queryObject", "obj:", obj, obj.id, "query:", query, "callback:", callback, "id", this.objToId(obj));
+
         if (obj == null) {
             console.log("Bridge: queryObject: obj is null", "query", JSON.stringify(query), "callback", callback);
             return;
@@ -297,8 +319,27 @@ class UnityJSBridge {
 
         this.sendEvent({
             event: 'Query',
-            id: obj.id,
-            data: data
+            id: this.objToId(obj),
+            data: data,
+        });
+    }
+
+
+    setGlobals(obj, globals)
+    {
+        if (obj == null) {
+            console.log("Bridge: setGlobals: obj is null", "globals", JSON.stringify(globals));
+            return;
+        }
+
+        var data = {
+            globals: globals,
+        };
+
+        this.sendEvent({
+            event: 'SetGlobals',
+            id: this.objToId(obj),
+            data: data,
         });
     }
 
@@ -314,8 +355,8 @@ class UnityJSBridge {
 
         this.sendEvent({
             event: 'Animate',
-            id: obj.id,
-            data: data
+            id: this.objToId(obj),
+            data: data,
         });
     }
 
@@ -329,8 +370,8 @@ class UnityJSBridge {
 
         this.sendEvent({
             event: 'UpdateInterests',
-            id: obj.id,
-            data: data
+            id: this.objToId(obj),
+            data: data,
         });
     }
 
@@ -575,11 +616,11 @@ class UnityJSBridge {
 
                     this.spreadsheets = data.spreadsheets;
 
-                    console.log("configuration JSON", this.configuration);
+                    //console.log("configuration JSON", this.configuration);
 
                     var configuration = JSON.parse(this.configuration);
 
-                    console.log("configuration Object", configuration);
+                    //console.log("configuration Object", configuration);
 
                     configuration.forEach(importSpec => {
                         var spreadsheetName = importSpec['spreadsheetName'];
@@ -605,7 +646,7 @@ class UnityJSBridge {
                         } else if (!value) {
                             console.log("Bridge: load: success: Loaded value but it was null.", "scope:", scope);
                         } else {
-                            console.log("Bridge: load: importing spreadsheetName", spreadsheetName, "sheetName", sheetName, "as", as, "keys", Object.keys(value));
+                            //console.log("Bridge: load: importing spreadsheetName", spreadsheetName, "sheetName", sheetName, "as", as, "keys", Object.keys(value));
                             if (!as) {
                                 Object.assign(this.world, value);
                             } else {
@@ -632,7 +673,7 @@ class UnityJSBridge {
 
     boot()
     {
-        console.log("Bridge: boot");
+        //console.log("Bridge: boot");
 
         this.nextID = 0;
         this.blobID = 0;
