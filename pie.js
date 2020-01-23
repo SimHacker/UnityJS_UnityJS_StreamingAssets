@@ -9,164 +9,6 @@
 ////////////////////////////////////////////////////////////////////////
 
 
-function DrawBackground_Pie(canvas, context, params, success, error)
-{
-    var world = bridge.world;
-    var pieTracker = world.pieTracker;
-    var pie = params.pie;
-    var target = params.target;
-    var width = params.width;
-    var height = params.height;
-    var cx = width * 0.5;
-    var cy = height * 0.5;
-    var initialDirection = bridge.searchDefault('initialDirection', pie, pieTracker.initialDirection);
-    var subtend = bridge.searchDefault('subtend', pie, pieTracker.subtend);
-    var clockwise = bridge.searchDefault('clockwise', pie, pieTracker.clockwise);
-    var inactiveDistance = bridge.searchDefault('inactiveDistance', pie, pieTracker.inactiveDistance);
-    var drawBackgroundGradient = bridge.searchDefault('drawBackgroundGradient', pie, pieTracker.drawBackgroundGradient);
-    var backgroundGradientInnerRadius = bridge.searchDefault('backgroundGradientInnerRadius', pie, pieTracker.backgroundGradientInnerRadius);
-    var backgroundGradientOuterRadius = bridge.searchDefault('backgroundGradientOuterRadius', pie, pieTracker.backgroundGradientOuterRadius);
-    var drawInactiveCircle = bridge.searchDefault('drawInactiveCircle', pie, pieTracker.drawInactiveCircle);
-    var drawSlices = bridge.searchDefault('drawSlices', pie, pieTracker.drawSlices);
-    var sliceLength = bridge.searchDefault('sliceLength', pie, pieTracker.sliceLength);
-    var sliceLengthSelected = bridge.searchDefault('sliceLengthSelected', pie, pieTracker.sliceLengthSelected);
-
-    context.clearRect(0, 0, width, height);
-
-    var slices = pie.slices;
-    var sliceCount = slices ? slices.length : 0;
-    var clockSign = clockwise ? -1 : 1;
-
-    if (drawBackgroundGradient) {
-        var gradient = context.createRadialGradient(cx, cy, 0, cx, cy, backgroundGradientOuterRadius);
-        var r = inactiveDistance / backgroundGradientOuterRadius;
-        gradient.addColorStop(0, '#ffffff20');
-        gradient.addColorStop(r, '#ffffff20');
-        gradient.addColorStop(r + 0.001, '#000000A0');
-        gradient.addColorStop(1, '#00000000');
-        if ((pieTracker.sliceIndex == -1) ||
-            !slices ||
-            !slices[pieTracker.sliceIndex]) {
-            context.arc(cx, cy, backgroundGradientOuterRadius, 0, Math.PI * 2.0);
-        } else {
-            var slice = slices[pieTracker.sliceIndex];
-            var sliceDirection = slice.sliceDirection;
-            var sliceSubtend = slice.sliceSubtend;
-            var halfTurn = 0.5 * clockSign * sliceSubtend;
-            //console.log("slice", slice, "sliceDirection", sliceDirection, "sliceSubtend", sliceSubtend, "halfTurn", halfTurn);
-            var dir1 = -(sliceDirection - halfTurn);
-            var dx1 = Math.cos(dir1);
-            var dy1 = Math.sin(dir1);
-            var dir2 = -(sliceDirection + halfTurn);
-            var dx2 = Math.cos(dir2);
-            var dy2 = Math.sin(dir2);
-            context.beginPath();
-            context.moveTo(
-                cx + (dx1 * inactiveDistance),
-                cy + (dy1 * inactiveDistance));
-            context.arc(
-                cx,
-                cy,
-                backgroundGradientOuterRadius,
-                dir1,
-                dir2,
-                !clockwise);
-            context.lineTo(
-                cx + (dx2 * inactiveDistance),
-                cy + (dy2 * inactiveDistance));
-            context.arc(
-                cx,
-                cy,
-                inactiveDistance,
-                dir2,
-                dir1,
-                clockwise);
-            context.closePath();
-        }
-        context.fillStyle = gradient;
-        context.fill();
-    }
-
-    if (drawInactiveCircle) {
-        context.beginPath();
-        context.arc(
-            cx,
-            cy,
-            inactiveDistance,
-            0,
-            Math.PI * 2.0);
-        context.strokeStyle = '#808080';
-        context.lineWidth = 2;
-        context.stroke();
-    }
-
-    if (!sliceCount) {
-        success();
-        return;
-    }
-
-    for (var sliceIndex = 0; sliceIndex < sliceCount; sliceIndex++) {
-        var slice = slices[sliceIndex];
-        var sliceSubtend = slice.sliceSubtend;
-        var sliceDirection = slice.sliceDirection;
-        var halfTurn = 0.5 * clockSign * sliceSubtend;
-
-        if (drawSlices) {
-            var selected = sliceIndex == pieTracker.sliceIndex;
-            var previousIndex = (sliceIndex + sliceCount - 1) % sliceCount;
-            var previousSelected = 
-                ((subtend == 0) || (sliceIndex != 0)) &&
-                (previousIndex == pieTracker.sliceIndex);
-            var longSlice = selected || previousSelected;
-            //console.log("sliceIndex", sliceIndex, "pieTracker.sliceIndex", pieTracker.sliceIndex, "selected", selected, "previousIndex", previousIndex, "previousSelected", previousSelected, "longSlice", longSlice); 
-            if ((pieTracker.sliceIndex == -1) ||
-                longSlice) {
-                var length =
-                    longSlice
-                        ? backgroundGradientOuterRadius
-                        : inactiveDistance + sliceLength;
-                var dx = Math.cos(sliceDirection - halfTurn);
-                var dy = -Math.sin(sliceDirection - halfTurn);
-                context.beginPath();
-                context.moveTo(
-                    cx + (dx * inactiveDistance),
-                    cy + (dy * inactiveDistance));
-                context.lineTo(
-                    cx + (dx * length),
-                    cy + (dy * length));
-                context.strokeStyle = '#808080';
-                context.lineWidth = 1;
-                context.stroke();
-            }
-            if ((subtend != 0) && 
-                (sliceIndex == (sliceCount - 1)) &&
-                (selected ||
-                 (pieTracker.sliceIndex == -1))) {
-                var length =
-                    selected
-                        ? backgroundGradientOuterRadius
-                        : inactiveDistance + sliceLength;
-                var dx = Math.cos(sliceDirection + halfTurn);
-                var dy = -Math.sin(sliceDirection + halfTurn);
-                context.beginPath();
-                context.moveTo(
-                    cx + (dx * inactiveDistance),
-                    cy + (dy * inactiveDistance));
-                context.lineTo(
-                    cx + (dx * length),
-                    cy + (dy * length));
-                context.strokeStyle = '#808080';
-                context.lineWidth = 1;
-                context.stroke();
-            }
-        }
-
-    }
-
-    success();
-}
-
-
 function CreatePieTracker()
 {
     var world = bridge.world;
@@ -199,19 +41,6 @@ function CreatePieTracker()
                     f.apply(null, args);
                 } else {
                     console.log("pie.js: PieTracker: CallHandler: target:", pieTracker.target, "missing handler:", handler);
-                }
-                break;
-
-            case "object":
-                if (Array.isArray(handler)) {
-                    for (var i = 0, n = handler.length; i < n; i++) {
-                        handler.id = pieTracker.target.id;
-                        SendEvent(handler[i]);
-                    }
-                } else {
-                    console.log("pie.js: PieTracker: CallHandler: unexpected handler type:", handler);
-                    handler.id = pieTracker.target.id;
-                    SendEvent(handler);
                 }
                 break;
 
@@ -1697,6 +1526,164 @@ function MakeParameterSlice(label, name, calculator, updater)
             }
         ]
     }
+}
+
+
+function DrawBackground_Pie(canvas, context, params, success, error)
+{
+    var world = bridge.world;
+    var pieTracker = world.pieTracker;
+    var pie = params.pie;
+    var target = params.target;
+    var width = params.width;
+    var height = params.height;
+    var cx = width * 0.5;
+    var cy = height * 0.5;
+    var initialDirection = bridge.searchDefault('initialDirection', pie, pieTracker.initialDirection);
+    var subtend = bridge.searchDefault('subtend', pie, pieTracker.subtend);
+    var clockwise = bridge.searchDefault('clockwise', pie, pieTracker.clockwise);
+    var inactiveDistance = bridge.searchDefault('inactiveDistance', pie, pieTracker.inactiveDistance);
+    var drawBackgroundGradient = bridge.searchDefault('drawBackgroundGradient', pie, pieTracker.drawBackgroundGradient);
+    var backgroundGradientInnerRadius = bridge.searchDefault('backgroundGradientInnerRadius', pie, pieTracker.backgroundGradientInnerRadius);
+    var backgroundGradientOuterRadius = bridge.searchDefault('backgroundGradientOuterRadius', pie, pieTracker.backgroundGradientOuterRadius);
+    var drawInactiveCircle = bridge.searchDefault('drawInactiveCircle', pie, pieTracker.drawInactiveCircle);
+    var drawSlices = bridge.searchDefault('drawSlices', pie, pieTracker.drawSlices);
+    var sliceLength = bridge.searchDefault('sliceLength', pie, pieTracker.sliceLength);
+    var sliceLengthSelected = bridge.searchDefault('sliceLengthSelected', pie, pieTracker.sliceLengthSelected);
+
+    context.clearRect(0, 0, width, height);
+
+    var slices = pie.slices;
+    var sliceCount = slices ? slices.length : 0;
+    var clockSign = clockwise ? -1 : 1;
+
+    if (drawBackgroundGradient) {
+        var gradient = context.createRadialGradient(cx, cy, 0, cx, cy, backgroundGradientOuterRadius);
+        var r = inactiveDistance / backgroundGradientOuterRadius;
+        gradient.addColorStop(0, '#ffffff20');
+        gradient.addColorStop(r, '#ffffff20');
+        gradient.addColorStop(r + 0.001, '#000000A0');
+        gradient.addColorStop(1, '#00000000');
+        if ((pieTracker.sliceIndex == -1) ||
+            !slices ||
+            !slices[pieTracker.sliceIndex]) {
+            context.arc(cx, cy, backgroundGradientOuterRadius, 0, Math.PI * 2.0);
+        } else {
+            var slice = slices[pieTracker.sliceIndex];
+            var sliceDirection = slice.sliceDirection;
+            var sliceSubtend = slice.sliceSubtend;
+            var halfTurn = 0.5 * clockSign * sliceSubtend;
+            //console.log("slice", slice, "sliceDirection", sliceDirection, "sliceSubtend", sliceSubtend, "halfTurn", halfTurn);
+            var dir1 = -(sliceDirection - halfTurn);
+            var dx1 = Math.cos(dir1);
+            var dy1 = Math.sin(dir1);
+            var dir2 = -(sliceDirection + halfTurn);
+            var dx2 = Math.cos(dir2);
+            var dy2 = Math.sin(dir2);
+            context.beginPath();
+            context.moveTo(
+                cx + (dx1 * inactiveDistance),
+                cy + (dy1 * inactiveDistance));
+            context.arc(
+                cx,
+                cy,
+                backgroundGradientOuterRadius,
+                dir1,
+                dir2,
+                !clockwise);
+            context.lineTo(
+                cx + (dx2 * inactiveDistance),
+                cy + (dy2 * inactiveDistance));
+            context.arc(
+                cx,
+                cy,
+                inactiveDistance,
+                dir2,
+                dir1,
+                clockwise);
+            context.closePath();
+        }
+        context.fillStyle = gradient;
+        context.fill();
+    }
+
+    if (drawInactiveCircle) {
+        context.beginPath();
+        context.arc(
+            cx,
+            cy,
+            inactiveDistance,
+            0,
+            Math.PI * 2.0);
+        context.strokeStyle = '#808080';
+        context.lineWidth = 2;
+        context.stroke();
+    }
+
+    if (!sliceCount) {
+        success();
+        return;
+    }
+
+    for (var sliceIndex = 0; sliceIndex < sliceCount; sliceIndex++) {
+        var slice = slices[sliceIndex];
+        var sliceSubtend = slice.sliceSubtend;
+        var sliceDirection = slice.sliceDirection;
+        var halfTurn = 0.5 * clockSign * sliceSubtend;
+
+        if (drawSlices) {
+            var selected = sliceIndex == pieTracker.sliceIndex;
+            var previousIndex = (sliceIndex + sliceCount - 1) % sliceCount;
+            var previousSelected = 
+                ((subtend == 0) || (sliceIndex != 0)) &&
+                (previousIndex == pieTracker.sliceIndex);
+            var longSlice = selected || previousSelected;
+            //console.log("sliceIndex", sliceIndex, "pieTracker.sliceIndex", pieTracker.sliceIndex, "selected", selected, "previousIndex", previousIndex, "previousSelected", previousSelected, "longSlice", longSlice); 
+            if ((pieTracker.sliceIndex == -1) ||
+                longSlice) {
+                var length =
+                    longSlice
+                        ? backgroundGradientOuterRadius
+                        : inactiveDistance + sliceLength;
+                var dx = Math.cos(sliceDirection - halfTurn);
+                var dy = -Math.sin(sliceDirection - halfTurn);
+                context.beginPath();
+                context.moveTo(
+                    cx + (dx * inactiveDistance),
+                    cy + (dy * inactiveDistance));
+                context.lineTo(
+                    cx + (dx * length),
+                    cy + (dy * length));
+                context.strokeStyle = '#808080';
+                context.lineWidth = 1;
+                context.stroke();
+            }
+            if ((subtend != 0) && 
+                (sliceIndex == (sliceCount - 1)) &&
+                (selected ||
+                 (pieTracker.sliceIndex == -1))) {
+                var length =
+                    selected
+                        ? backgroundGradientOuterRadius
+                        : inactiveDistance + sliceLength;
+                var dx = Math.cos(sliceDirection + halfTurn);
+                var dy = -Math.sin(sliceDirection + halfTurn);
+                context.beginPath();
+                context.moveTo(
+                    cx + (dx * inactiveDistance),
+                    cy + (dy * inactiveDistance));
+                context.lineTo(
+                    cx + (dx * length),
+                    cy + (dy * length));
+                context.strokeStyle = '#808080';
+                context.lineWidth = 1;
+                context.stroke();
+            }
+        }
+
+    }
+
+    success();
 }
 
 
