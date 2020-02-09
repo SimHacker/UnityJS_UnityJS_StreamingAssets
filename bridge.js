@@ -637,9 +637,13 @@ class UnityJSBridge {
                             return;
                         }
 
+                        //console.log("Bridge: load: calling SheetToScope:", "sheets:", spreadsheet.sheets, "ranges:", spreadsheet.ranges, "sheetName:", sheetName);
+
                         var scope = SheetToScope(spreadsheet.sheets, spreadsheet.ranges, sheetName);
                         var error = scope.error;
                         var value = scope.value;
+
+                        //console.log("Bridge: load: called SheetToScope:", "scope:", scope, "error:", error, "value:", value);
 
                         if (error) {
                             console.log("Bridge: load: success: Error loading world. Error in spreadsheetName:", spreadsheetName, "sheetName:", scope.errorScope.errorSheetName, "row:", scope.errorScope.errorRow, "column:", scope.errorScope.errorColumn, "error:", error, "errorScope:", scope.errorScope);
