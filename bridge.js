@@ -698,7 +698,7 @@ class UnityJSBridge {
     //
     // drawToCanvas(params, drawer, success, error)
     //     params is an object that contains width and height, and is passed to the drawer, success and error functions.
-    //     drawer is a function that takes a d3 canvas, a 2d context, the params object, a success function, and an error function.
+    //     drawer is a function that takes a canvas, a 2d context, the params object, a success function, and an error function.
     //     success function takes a texture object, a uvRect object, and the params object.
     //     texture object is driver specific:
     //         WebGL:    var texture = { type: 'sharedtexture', id: id };
@@ -710,7 +710,7 @@ class UnityJSBridge {
     //                 this._UnityJS_Socket.binary(true).emit('SendBlob', blobID, blob);
     //         default:  var texture = { type: 'datauri',       width: width, height: height, uri: data };
     //             Sends data uri with:
-    //                 canvasNode.toBlob();
+    //                 canvas.toBlob();
     //                 reader.readAsDataURL(blob);
     //     uvRect object contains x, y, width, and height.
     //     error function takes the params object.
@@ -719,16 +719,13 @@ class UnityJSBridge {
     {
         var width = params.width;
         var height = params.height;
-        var canvas =
-            d3.select('body')
-                .append('canvas')
-                .attr('width', width)
-                .attr('height', height)
-                .attr('style', 'display: none');
-        var canvasNode =
-            canvas.node();
-        var context =
-            canvasNode.getContext('2d');
+        var canvas = document.createElement('canvas');
+        var context = canvas.getContext('2d');
+
+        canvas.width = width;
+        canvas.height = height;
+        canvas.style = 'display: none;';
+        document.body.appendChild(canvas);
 
         //console.log("drawToCanvas", width, height, canvas, drawer);
 
@@ -767,11 +764,11 @@ class UnityJSBridge {
                         var uvRect = { x: 0, y: 0, width: 1, height: -1 };
                         //console.log("drawToCanvas WebGL success");
                         success(texture, uvRect, params);
-                        canvasNode.parentNode.removeChild(canvasNode);
+                        canvas.parentNode.removeChild(canvas);
                         break;
 
                     case "SocketIO":
-                        canvasNode.toBlob((blob) => {
+                        canvas.toBlob((blob) => {
                             var reader = new FileReader();
                             reader.onload = (e) => {
                                 var blob = e.target.result;
@@ -786,11 +783,11 @@ class UnityJSBridge {
                                 };
                                 var uvRect = { x: 0, y: 0, width: 1, height: 1 };
                                 success(texture, uvRect, params);
-                                canvasNode.parentNode.removeChild(canvasNode);
+                                canvas.parentNode.removeChild(canvas);
                             };
                             reader.onerror = reader.onabort = (e) => {
                                 error(params);
-                                canvasNode.parentNode.removeChild(canvasNode);
+                                canvas.parentNode.removeChild(canvas);
                             };
                             reader.readAsArrayBuffer(blob);
                         });
@@ -798,7 +795,7 @@ class UnityJSBridge {
 
                     default:
                         //console.log("drawToCanvas default width", width, "height", height);
-                        canvasNode.toBlob((blob) => {
+                        canvas.toBlob((blob) => {
                             var reader = new FileReader();
                             reader.onload = (e) => {
                                 var data = e.target.result;
@@ -811,12 +808,12 @@ class UnityJSBridge {
                                 };
                                 var uvRect = { x: 0, y: 0, width: 1, height: 1 };
                                 success(texture, uvRect, params);
-                                canvasNode.parentNode.removeChild(canvasNode);
+                                canvas.parentNode.removeChild(canvas);
                             };
                             reader.onerror = reader.onabort = (e) => {
                                 //console.log("drawToCanvas default error", e, params);
                                 error(params);
-                                canvasNode.parentNode.removeChild(canvasNode);
+                                canvas.parentNode.removeChild(canvas);
                             };
                             //console.log("drawToCanvas default blob", blob);
                             reader.readAsDataURL(blob);
@@ -827,7 +824,7 @@ class UnityJSBridge {
             },
             () => {
                 error(params);
-                canvasNode.parentNode.removeChild(canvasNode);
+                canvas.parentNode.removeChild(canvas);
             });
 
         //console.log("drawToCanvas drawer done");
